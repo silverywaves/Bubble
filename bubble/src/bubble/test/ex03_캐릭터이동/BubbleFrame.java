@@ -52,6 +52,7 @@ public class BubbleFrame extends JFrame{
 								// -> 사용하기 원하는 메서드만 오버라이드로 불러와서 사용 가능
 			@Override
 			public void keyPressed(KeyEvent e) {		// 4-4 KeyAdapter 를 사용해 keyPressed 메서드만 재정의 진행
+				// 이벤트 핸들러(순서 : addKeyListener 생성->keyPressed 스택(이벤트핸들러) 등록)
 				System.out.println(e.getKeyCode());		// 4-5 키보드 버튼 코드를 출력하여 상하좌우 버튼 코드 확인
 				// => 결과 : 좌 39 / 우 37 / 상 38 / 하 40
 				

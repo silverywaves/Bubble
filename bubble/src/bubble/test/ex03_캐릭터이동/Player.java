@@ -52,6 +52,9 @@ public class Player extends JLabel implements Moveable { //  2-2 인터페이스
 	}
 
 	// 2-3 left, right, up, down 오버라이드  -> 3-1 캐릭터의 상태 필요
+	// 이벤트 루프(메모리공간)에 이벤트 순차적 저장(큐) -> 이벤트 핸들러(stack 공간-메서드 내부) 호출 -> 이벤트 실행
+	// 6-1 **주의1 : 그림 변경 시점은 이벤트 루프에 모든 임무(TASK)가 완료될 때 REPRINT
+	// 7-1 **주의2 : 메인스레드만 있으면(스레드가 하나면) 이벤트 루프에 KEY 전달시 하나밖에 전송하지 못함! (RIGHT->UP 시 RIGHT 멈춤. 동시진행 x) 
 	@Override
 	public void left() {
 		// 4-1 키보드 왼쪽 화살표 버튼을 누를 때 이동 -> 이벤트 처리(BubbleFrame.java 이동)
@@ -62,6 +65,11 @@ public class Player extends JLabel implements Moveable { //  2-2 인터페이스
 
 	@Override
 	public void right() {
+//		try {
+//			Thread.sleep(2000);		// 6-2 오른쪽 키를 누르면 2초동안 멈췄다가 이동하게 만들어 둔 후 캐릭터를 연속으로 움직여 보자!
+//		} catch (InterruptedException e) {		// -> 키보드를 누른만큼 순간이동한 것 처럼 한번에 움직임
+//			e.printStackTrace();
+//		}		
 		// 4-1 키보드 오른쪽 화살표 버튼을 누를 때 이동 -> 이벤트 처리(BubbleFrame.java 이동)
 		setIcon(playerR);	// 5-7 왼쪽으로 이동한 후 왼쪽이미지가 고정됨 -> 좌우에 따라 다른 이미지가 나타나도록 해당 메서드에도 이미지 바꿔주기!
 		x += 10;	// 5-2 x 좌표 이동 거리 설정
@@ -70,13 +78,13 @@ public class Player extends JLabel implements Moveable { //  2-2 인터페이스
 
 	@Override
 	public void up() {
-		// 4-1 키보드 위쪽 화살표 버튼을 누를 때 이동 -> 이벤트 처리(BubbleFrame.java 이동)
-		
+		// 키보드 위쪽 화살표 버튼을 누를 때 이동
+
 	}
 
 	@Override
 	public void down() {
-		// 4-1 키보드 아래쪽 화살표 버튼을 누를 때 이동 -> 이벤트 처리(BubbleFrame.java 이동)
-		
+		// 키보드 아래쪽 화살표 버튼을 누를 때 이동 
+	
 	}
 }
