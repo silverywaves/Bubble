@@ -1,4 +1,4 @@
-package bubble.test.ex12_물방울움직이기;
+package bubble.test.ex13_물방울충돌감지;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;

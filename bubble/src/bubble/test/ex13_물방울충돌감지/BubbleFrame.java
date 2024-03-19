@@ -1,4 +1,4 @@
-package bubble.test.ex12_물방울움직이기;
+package bubble.test.ex13_물방울충돌감지;
 
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

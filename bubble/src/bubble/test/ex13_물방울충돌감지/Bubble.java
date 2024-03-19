@@ -1,4 +1,4 @@
-package bubble.test.ex12_물방울움직이기;
+package bubble.test.ex13_물방울충돌감지;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;	// 1-2 JLabel 임포트
@@ -12,6 +12,8 @@ public class Bubble extends JLabel implements Moveable {
 	
 	// 의존성 컴포지션
 	private Player player;	
+	private BackgroundBubbleService backgroundBubbleService;	// 5 의존
+	// 참고 : 플레이어는 플레이어백그라운드서비스에 의존하지 않고 자체적으로 스레드가 돌면서 처리됐었음
 	
 	// 버블이 만들어질 때 최초 위치 상태 => 플레이어의 위치와 동일해야 함 (버블은 플레이어에 의존적) => 의존성 컴포지션 필요
 	private int x; 
@@ -30,17 +32,19 @@ public class Bubble extends JLabel implements Moveable {
 	
 	
 	// 생성자
-	public Bubble(Player player) {	
+	public Bubble(Player player) {	// 5 이때 의존해야함
 		this.player = player;	
 		initObject();
 		initSetting();
-		initThread();		// 2. initThread 추가
+		initThread();
 	}
 
 	private void initObject() {		
 		bubble = new ImageIcon("image/bubble.png");		
 		bubbled = new ImageIcon("image/bubbled.png");	
 		bomb = new ImageIcon("image/bomb.png");		
+		
+		backgroundBubbleService = new BackgroundBubbleService(this);	// 6 버블이 만들어질때마다 new!
 	}
 	private void initSetting() {	
 		left = false;	
@@ -56,13 +60,12 @@ public class Bubble extends JLabel implements Moveable {
 		state = 0;			// 물방울 상태이므로 0
 	}
 
-	// 1. 버블은 스레드가 하나만 필요함
-	private void initThread() {	// 3 initThread 메서드 추가
-		new Thread(()->{		// 4 스레드 start(작동) -람다식
-			if(player.getPlayerWay()==PlayerWay.LEFT) {	// 5 조건 걸어주기 : 플레이어가 왼쪽방향인 경우 
-				left();		// 6 left() 실행
-			} else {		// 7 플레이어가 오른쪽방향인 경우
-				right();	// 8 right() 실행
+	private void initThread() {	
+		new Thread(()->{		
+			if(player.getPlayerWay()==PlayerWay.LEFT) {
+				left();		
+			} else {		
+				right();	
 			}
 		}).start();
 	}
@@ -70,29 +73,37 @@ public class Bubble extends JLabel implements Moveable {
 
 	@Override
 	public void left() {
-		// 12-1 left 상태 만들어주기
 		left = true;
-		// 9 물방울이 이동하는 범위를 줘야 함 => while 말고 for 문 사용
-		for(int i=0;i<400;i++) {	// 9-2 범위를 400 정도로 정함
-			x--;					// 9-4 왼족이동 => x 좌표 - 
-			setLocation(x,y);		// 9-3 이동
+		for(int i=0;i<400;i++) {	
+			x--;					
+			setLocation(x,y);	
+			
+			// 7 버블이 움직일때마다 왼쪽벽에 부딪힘 여부 체크하기
+			if(backgroundBubbleService.leftWall()) {	// true 가 되면 부딪혔다는 뜻
+				break;									// for 문 빠져나가기(그때 멈춰라)
+			}
+			
 			try {
-				Thread.sleep(1);	// 9-4 움직이는 속도 조정
+				Thread.sleep(1);	
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			// 9-5 범위(400)만큼 이동했다가 위로 이동(up)
 		}
 		up();
 	}
 
 	@Override
 	public void right() {
-		// 12-2 right 상태 만들어주기
 		right = true;
 		for(int i=0;i<400;i++) {	
-			x++;					// 10 left 내용 복붙 후 좌표만 수정하면 됨			
+			x++;								
 			setLocation(x,y);	
+			
+			// 8 버블이 움직일때마다 오른쪽벽에 부딪힘 여부 체크하기  -> 9 버블서비스로 이동
+			if(backgroundBubbleService.rightWall()) {	// true 가 되면 부딪혔다는 뜻
+				break;
+			}
+			
 			try {
 				Thread.sleep(1);	
 			} catch (InterruptedException e) {
@@ -105,11 +116,15 @@ public class Bubble extends JLabel implements Moveable {
 
 	@Override
 	public void up() {
-		// 12-3 up 상태 만들어주기
-		up = true;
-		while(up) {		// 12-4 while 조건 안에 up 넣어주기
-			y--;			// 11 left 내용 복봍 후 좌표만 수정하면 됨 (up은 범위 없이 계속 위로 올라가게만 설정해주면 됨)		
+		while(true) {
+			y--;					
 			setLocation(x,y);	
+			
+			// 15 버블이 움직일때마다 위쪽벽에 부딪힘 여부 체크하기
+			if(backgroundBubbleService.topWall()) {	
+				break;								
+			}
+			
 			try {
 				Thread.sleep(1);	
 			} catch (InterruptedException e) {
@@ -117,8 +132,6 @@ public class Bubble extends JLabel implements Moveable {
 			}
 		}
 	}
-	
-	// 12 물방울을 계속 밣사하다보면 속도가 느려짐 -why?-> 스레드가 엄청나게 많이 생성되는데, 사라지지않아서(제거되지 않아) 느려지는 것
-	// => 스레드를 메모리에서 제거해주면서 상좌우 벽에 물방울이 부딪히면 터지도록 수정해보자
+
 
 }
