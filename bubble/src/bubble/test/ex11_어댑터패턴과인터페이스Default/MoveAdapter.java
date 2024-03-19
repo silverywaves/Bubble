@@ -1,4 +1,4 @@
-//package bubble.test.ex11_어댑터패턴과인터페이스;
+package bubble.test.ex11_어댑터패턴과인터페이스Default;
 //
 //// 어댑터 -> 걸러내는 역할(필터링)
 //public abstract class MoveAdapter implements Moveable {		// 8 추상클래스로 만들어준 후 Moveable implements 해주기
@@ -13,6 +13,5 @@
 //
 //	
 //}	// 12-2 삭제 -> 13 Moveable 이동
-package bubble;
 
 
