@@ -6,13 +6,12 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-// 1 물방울이 발사될때마다 backgroundPlayerService 실행 -> 비효율적 -> 버불백그라운드 생성
-//   BackgroundPlayerService 에서 속성,매서드만 복사해옴 -> Player player 를 Bubble bubble 로 수정
 
 public class BackgroundBubbleService {	// 2 Runnable x(스레드가 돌면 안됨)	
 	// 4 BackgroundBubbleService : 한번 발동하는 것이 아니라 버블이 움직일때마다 벽이 있는지 확인 -> 버블이 만들어질때마다 new 가 되어야 함
 	// 버블이 만들어지는 시점 => bubbleFrame 의 VK_SPACE => 의존성 컴포지션 추가해야함 Bubble 로 이동
 
+	// 1 물방울이 발사될때마다 backgroundPlayerService 실행 -> 비효율적 -> 버불백그라운드 생성
 	 private BufferedImage image;
 	 private Bubble bubble;
 	 
