@@ -53,7 +53,7 @@ public class BackgroundBubbleService {	// 2 Runnable x(스레드가 돌면 안�
 	 public boolean topWall(){
 		 // 12-1 버블 위치 색상 확인(위쪽)
 		 Color topColor = new Color(image.getRGB(bubble.getX()+25, bubble.getY()-10));	// 12-2 x 좌표는 버블의 중앙, y 좌표는 버블의 족즘 위쪽(여유공간)으로 설정
-		 // 13 충돌 확인(위쪽) -> 14 Bubble 로 이동해서 위쪽벽에 충돌시 멈추는 코드 넣어주기
+		 // 13 충돌 확인(위쪽) -> 14 Bubble 로 이동해서 위쪽벽에 충돌시 멈추는 코드 넣어주기 -> 14 위쪽 벽에 충돌하면 물방울 사라짐
 		 if(topColor.getRed()==255 && topColor.getGreen()==0 && topColor.getBlue()==0) {
 //				System.out.println("위쪽 벽에 충돌함");
 			 return true;		
