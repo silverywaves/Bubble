@@ -14,6 +14,7 @@ public class Bubble extends JLabel implements Moveable {
 	private BubbleFrame mContext;	
 	private Player player;	
 	private BackgroundBubbleService backgroundBubbleService;
+	private Enemy enemy;	// 적 물방울 충돌 확인 1
 	
 	// 버블이 만들어질 때 최초 위치 상태 => 플레이어의 위치와 동일해야 함 (버블은 플레이어에 의존적) => 의존성 컴포지션 필요
 	private int x; 
@@ -35,6 +36,7 @@ public class Bubble extends JLabel implements Moveable {
 	public Bubble(BubbleFrame mContext) {	
 		this.mContext = mContext;			
 		this.player = mContext.getPlayer();	
+		this.enemy = mContext.getEnemy();	// 적 물방울 충돌 확인 2
 		initObject();
 		initSetting();
 	}
@@ -72,6 +74,14 @@ public class Bubble extends JLabel implements Moveable {
 			if(backgroundBubbleService.leftWall()) {	// true 가 되면 부딪혔다는 뜻
 				left = false;							// 상태 변경(left가 끝날때 false) <- 상태는 행위에 의해 변경됨
 				break;									// for 문 빠져나가기(그때 멈춰라)
+			}
+			// 적 물방울 충돌 확인 3 => x좌표 40과 60의 범위 절대값
+			// 적 물방울 충돌 확인 4 => y좌표 맞는 범위 : 물의 y좌표=0//(0,0), 적군의 y좌표=50//(50,50)
+			// 물의 y좌표(0)-적군의 y좌표(50)=-50 (0) // 0-55=-55 (x) // 0-45=-45 (o) // 0-0=0 (o)
+			if((Math.abs(x - enemy.getX()) > 40 && Math.abs(x - enemy.getX()) < 60) 
+				&& (Math.abs(y - enemy.getY()) > 0 && Math.abs(y - enemy.getY()) < 50)) {
+				System.out.println("물방울이 적군과 충돌");
+				attack();		// 적 물방울 충돌 확인 6 => attack 메서드 실행
 			}
 			
 			try {
@@ -128,6 +138,13 @@ public class Bubble extends JLabel implements Moveable {
 		clearBubble();		
 	}
 
+	// 적 물방울 충돌 확인 5 => attack 오버라이드 -> 적 물방울 충돌 확인 6 => 충돌시 실행시키
+	@Override
+	public void attack() {
+		state = 1;			// 물방울이 attack 한다는 것은 적군을 가두는 것 -> 상태가 바뀌어야함
+		setIcon(bubbled);	// 물방울 아이콘 변경
+		
+	}
 	
 	private void clearBubble() {
 		try {
