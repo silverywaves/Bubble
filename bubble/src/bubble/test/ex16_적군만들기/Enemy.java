@@ -27,12 +27,16 @@ public class Enemy extends JLabel implements Moveable { // 1 적군도 그림이
 	private boolean up;  
 	private boolean down; 	 
 	
+	// 적 물방울 충돌 확인 11 => enemy 상태 부여
+	private int state;	// 0(살아있는 상태), 1(물방울에 갇힌 상태)
+	
 	// 4 적군은 키보드로 움직이는 것이 아니라 자동으로 움직임 -> 벽에 충돌한 상태 필요 x
 	// 5 적군은 BubbleFrame 시작할 때 등장 -> BubbleFrame 이동
 	
 	// 적군 속도 상태
 	private final int SPEED = 3;	
 	private final int JUMPSPEED = 1;	
+
 	
 	private ImageIcon enemyR, enemyL; 
 
@@ -56,6 +60,10 @@ public class Enemy extends JLabel implements Moveable { // 1 적군도 그림이
 		right = false;
 		up = false;
 		down = false;
+		
+		
+		// 적 물방울 충돌 확인 12 => enemy 살아있는 상태로 초기 설정
+		state = 0;
 
 		
 		enemyWay = EnemyWay.RIGHT;	
