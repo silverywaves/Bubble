@@ -75,18 +75,25 @@ public class Bubble extends JLabel implements Moveable {
 				left = false;							// 상태 변경(left가 끝날때 false) <- 상태는 행위에 의해 변경됨
 				break;									// for 문 빠져나가기(그때 멈춰라)
 			}
-			// 적 물방울 충돌 확인 3 => x좌표 40과 60의 범위 절대값
+			// 적 물방울 충돌 확인 3 => x좌표 맞는 범위 : 45와 55 범위 절대값
 			// 적 물방울 충돌 확인 4 => y좌표 맞는 범위 : 물의 y좌표=0//(0,0), 적군의 y좌표=50//(50,50)
 			// 물의 y좌표(0)-적군의 y좌표(50)=-50 (0) // 0-55=-55 (x) // 0-45=-45 (o) // 0-0=0 (o)
-			if((Math.abs(x - enemy.getX()) > 40 && Math.abs(x - enemy.getX()) < 60) 
+//			if((Math.abs(x - enemy.getX()) > 45 && Math.abs(x - enemy.getX()) < 55) 
+			if((Math.abs(x - enemy.getX()) < 10) // 17. 코드상 문제는 없으나, 물방울에 가두어지는 거리가 애매허서 아군과 적군의 거리가 10 차이가 날 때로 변경
 				&& (Math.abs(y - enemy.getY()) > 0 && Math.abs(y - enemy.getY()) < 50)) {
 				System.out.println("물방울이 적군과 충돌");
 				// 적 물방울 충돌 확인 13 => enemy 상태를 조건으로 실행
-				if(enemy.getState()==0)attack();		// 적 물방울 충돌 확인 6 => attack 메서드 실행
-				break;			// 적 물방울 충돌 확인 10 => 적군이 물방울에 맞는 시점 상태(0->1) 변경 (for문 빠져나가기)
+//				if(enemy.getState()==0)
+//					attack();		// 적 물방울 충돌 확인 6 => attack 메서드 실행
+//				break;			// 적 물방울 충돌 확인 10 => 적군이 물방울에 맞는 시점 상태(0->1) 변경 (for문 빠져나가기)
 				// => 여기까지 했을때 적군이 지워졌음에도 계속 적군담긴 물방울이 생성되는 버그 발생
 				// -why?-> enemy를 remove 후 화면 갱신(repaint())
 				// -> 가비지컬렉션(즉시 발동x -> remove한다고 해서 enemy가 메모리에서 완벽히 소멸되지 않음) -> enemy에게 상태 부여
+				// --------------- 15 버그 잡기 위해 중괄호로 break; 함께 잡아주기
+				if(enemy.getState()==0) {
+					attack();		// 적 물방울 충돌 확인 6 => attack 메서드 실행
+					break;	
+				}		// 16 오른쪽도 똑같이 설정하기
 				
 			}
 			
@@ -111,6 +118,16 @@ public class Bubble extends JLabel implements Moveable {
 				right = false;							// 상태 변경(right가 끝날때 false) <- 상태는 행위에 의해 변경됨
 				break;
 			}
+			
+			// 16 
+			if((Math.abs(x - enemy.getX()) < 10) 
+					&& (Math.abs(y - enemy.getY()) > 0 && Math.abs(y - enemy.getY()) < 50)) {
+					System.out.println("물방울이 적군과 충돌");					
+					if(enemy.getState()==0) {
+						attack();	
+						break;	
+					}	
+				}
 			
 			try {
 				Thread.sleep(1);	
@@ -145,8 +162,9 @@ public class Bubble extends JLabel implements Moveable {
 				e.printStackTrace();
 			}
 		} // end of while
-		
-		clearBubble();		
+		if(state==0)		// 19 버블의 상태 0(적군을 안맞춘 상태) -> 다음 챕터에서 플레이어가 적군이 담긴 물방울을 터트리면 사라지도록 설정
+			clearBubble();	// 천장에 버블이 도착하고 나서 3초후에 메모리에서 소멸
+		// 18 적군이 담긴 물방울은 터지면 X => if 문으로 상태 설정 	
 	}
 
 	// 적 물방울 충돌 확인 5 => attack 오버라이드 -> 적 물방울 충돌 확인 6 => 물방울 아이콘 변경상태 확인
@@ -154,8 +172,9 @@ public class Bubble extends JLabel implements Moveable {
 	public void attack() {
 		
 		state = 1;			// 물방울이 attack 한다는 것은 적군을 가두는 것 -> 상태가 바뀌어야함
-		// 적 물방울 충돌 확인 14 => enemy 상태 추가
-		enemy.setState(1);
+		enemy.setState(1);	// 적 물방울 충돌 확인 14 => enemy 상태 추가
+		// => 여기까지 하면 버그 발생. 적이 없어져도 물방울이 앞으로 나아가지 않음 -WHY?-> 중괄호 문제
+		
 		setIcon(bubbled);	// 물방울 아이콘 변경
 		mContext.remove(enemy);		// 적 물방울 충돌 확인 8 => 적군을 메모리에서 삭제(가비지컬렉션-즉시발동x) -> 깔끔하게 안지워짐
 		mContext.repaint();			// 적 물방울 충돌 확인 9 => 리페인팅 진행(화면갱신. 깔끔하게 지워짐) -> 적군 담은 물방울 속도 조절
