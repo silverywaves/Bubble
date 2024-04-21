@@ -178,4 +178,22 @@ public class Bubble extends JLabel implements Moveable {
 			e.printStackTrace();
 		}
 	}
+	
+	// 9. clearBubbled 메서드 생성 -> BackgroundPlayerService 이동
+	public void clearBubbled() {
+		// 버그해결관련 자체 thread
+		new Thread(()->{
+			System.out.println("clearBubbled");
+			try {
+				up=false; // 더이상 올라갈 수 없게 false 지정
+				setIcon(bomb);
+				Thread.sleep(1000); // 1초 쉼
+				mContext.remove(this);	// 내 버블 자체를 remove
+				mContext.repaint();	// 그림 다시 그리기
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}).start();
+		
+	}
 }

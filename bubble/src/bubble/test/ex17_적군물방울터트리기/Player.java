@@ -72,8 +72,22 @@ public class Player extends JLabel implements Moveable {
 
 	}
 	
-	private void initBackgroundPlayerService() {		
-		new Thread(new BackgroundPlayerService(mContext)).start();	// 2. this->mContext 변경
+	private void initBackgroundPlayerService() {
+//		System.out.println("실행됨");
+//		
+//		if(mContext.getPlayer()==null) {
+//			System.out.println("player==null");
+//		}else {
+//			System.out.println("palyer!=null");
+//		}	// player==null 출력됨 -> 아래 Thread 코드 BackgroundPlayerService(mContext)->this 변경
+		
+//		if(mContext.getPlayer().getBubbleList()==null) {
+//			System.out.println("bubbleList==null");
+//		}else {
+//			System.out.println("bubbleList!=null");
+//		}	// 에러발생
+		new Thread(new BackgroundPlayerService(this)).start();	// 2. this->mContext 변경, BackgroundPlayerService 이동
+		// => backgroundplayerservice가 new 되는 시점 => mContext = 플레이어객체가 생성되는 시점에서는 버블 생성X
 	}
 
 	@Override

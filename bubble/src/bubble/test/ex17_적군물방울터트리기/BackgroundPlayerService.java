@@ -17,10 +17,10 @@ public class BackgroundPlayerService implements Runnable {
 	 // 1. 플레이어, 버블 정보 필요 -> Player.java 이동
 //	 public BackgroundPlayerService(Player player) {
 //		 this.player = player;		
-	 public BackgroundPlayerService(BubbleFrame mContext) {
-		 this.player = mContext.getPlayer();
-		 this.bubbleList = mContext.getPlayer().getBubbleList();	// 플레이어가 버블 생성
-		 //  java.lang.NullPointerException 에러 발생 -why?->
+	 public BackgroundPlayerService(Player player) {		// 8. BubbleFrame mContext -> Player player 변경 => 버그해결, Bubble.java 이동
+		 this.player = player;
+		 this.bubbleList = player.getBubbleList();	// 플레이어가 버블 생성
+		 //  java.lang.NullPointerException 에러 발생 -why?-> player.java에서 backgroundplayerservice가 new 되는 시점 mContext(Player.java 이동)
 	
 		 try {
 			 image = ImageIO.read(new File("image/backgroundMapService.png")); 
@@ -35,10 +35,20 @@ public class BackgroundPlayerService implements Runnable {
 			
 			// 6. 버블 충돌 체크
 			for(int i=0; i<bubbleList.size();i++) {
-				if(bubbleList.get(i).getState()==1) {	// 충돌을 했을 때
-					if((Math.abs(player.getX() - bubbleList.get(i).getX()) < 10) 
-							&& (Math.abs(player.getY() - bubbleList.get(i).getY()) > 0 && Math.abs(player.getY() - bubbleList.get(i).getY()) < 50)) {
+				Bubble bubble = bubbleList.get(i);
+				if(bubble.getState()==1) {	// 충돌을 했을 때
+					if((Math.abs(player.getX() - bubble.getX()) < 10) 
+							&& (Math.abs(player.getY() - bubble.getY()) > 0 && Math.abs(player.getY() - bubble.getY()) < 50)) {
 						System.out.println("적군 터트리기 완료");
+						// 버그해결관련 자체 thread .. 이렇게 해도 되지만 함수에서 처리하는 것이 더 이상적이니 bubble 로 이동
+//						new Thread(()->{
+							// 10 clearBubbled 함수 호출
+							bubble.clearBubbled(); 
+//						}).start();
+						break;
+						// => 10번까지 완료 후 버그 발생(내용 : 적이 담긴 물방울 터트리면 player 가 바닥 뚫고 추락함)
+						// -why?-> break; 때문에 버블 충돌체크 이후 벽 충돌체크로 못넘어감.. 그림을 지웠다가 다시 그리는 과정에서 모든 것이 초기화되어버림
+						// -> 그림을 다시 그리는 부분만 자체 스레드로 돌려보자
 					}
 				}
 			}
